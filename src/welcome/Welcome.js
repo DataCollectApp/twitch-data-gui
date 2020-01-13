@@ -41,11 +41,13 @@ class Welcome extends React.Component {
                 I am working on more features (user search etc.) for the website.<br/><br/>
               </p>
               <h3>Basic statistics</h3>
-              Twitch users: <b>{this.state.twitchUserCount}</b><br/>
-              Name changes: <b>{this.state.nameChangeCount}</b><br/>
-              Timeouts: <b>{this.state.clearChatCount}</b><br/>
-              Global timeouts: <b>{this.state.globalClearChatCount}</b><br/>
-              Message timeouts: <b>{this.state.clearMessageCount}</b>
+              <p>
+                Twitch users: <b>{this.state.twitchUserCount}</b><br/>
+                Name changes: <b>{this.state.nameChangeCount}</b><br/>
+                Timeouts: <b>{this.state.clearChatCount}</b><br/>
+                Global timeouts: <b>{this.state.globalClearChatCount}</b><br/>
+                Message timeouts: <b>{this.state.clearMessageCount}</b>
+              </p>
             </Paper>
           </Container>
         </div>
