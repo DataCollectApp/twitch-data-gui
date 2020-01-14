@@ -6,6 +6,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import * as React from "react";
+import Fade from "@material-ui/core/Fade";
 
 class RecentClearMessage extends React.Component {
 
@@ -49,12 +50,14 @@ class RecentClearMessage extends React.Component {
               </TableHead>
               <TableBody>
                 {this.state && this.state.clearMessages && this.state.clearMessages.map(clearMessage => (
-                    <TableRow key={clearMessage.id}>
-                      <TableCell>{clearMessage.targetUsername}</TableCell>
-                      <TableCell>{clearMessage.channel}</TableCell>
-                      <TableCell>{clearMessage.message}</TableCell>
-                      <TableCell>{new Date(clearMessage.time).toLocaleString()}</TableCell>
-                    </TableRow>
+                    <Fade in={true}>
+                      <TableRow key={clearMessage.id}>
+                        <TableCell>{clearMessage.targetUsername}</TableCell>
+                        <TableCell>{clearMessage.channel}</TableCell>
+                        <TableCell>{clearMessage.message}</TableCell>
+                        <TableCell>{new Date(clearMessage.time).toLocaleString()}</TableCell>
+                      </TableRow>
+                    </Fade>
                 ))}
               </TableBody>
             </Table>

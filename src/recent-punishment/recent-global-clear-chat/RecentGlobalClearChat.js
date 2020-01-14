@@ -6,6 +6,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import * as React from "react";
+import Fade from "@material-ui/core/Fade";
 
 class RecentGlobalClearChat extends React.Component {
 
@@ -47,10 +48,12 @@ class RecentGlobalClearChat extends React.Component {
               </TableHead>
               <TableBody>
                 {this.state && this.state.globalClearChats && this.state.globalClearChats.map(globalClearChat => (
-                    <TableRow key={globalClearChat.id}>
-                      <TableCell>{globalClearChat.channel}</TableCell>
-                      <TableCell>{new Date(globalClearChat.time).toLocaleString()}</TableCell>
-                    </TableRow>
+                    <Fade in={true}>
+                      <TableRow key={globalClearChat.id}>
+                        <TableCell>{globalClearChat.channel}</TableCell>
+                        <TableCell>{new Date(globalClearChat.time).toLocaleString()}</TableCell>
+                      </TableRow>
+                    </Fade>
                 ))}
               </TableBody>
             </Table>

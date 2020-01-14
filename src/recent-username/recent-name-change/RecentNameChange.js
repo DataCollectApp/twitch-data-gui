@@ -6,6 +6,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import * as React from "react";
+import Fade from "@material-ui/core/Fade";
 
 class RecentNameChange extends React.Component {
 
@@ -49,12 +50,14 @@ class RecentNameChange extends React.Component {
               </TableHead>
               <TableBody>
                 {this.state && this.state.nameChanges && this.state.nameChanges.map(nameChange => (
-                    <TableRow key={nameChange.id}>
-                      <TableCell>{nameChange.oldUsername}</TableCell>
-                      <TableCell>{nameChange.newUsername}</TableCell>
-                      <TableCell>{new Date(nameChange.discoveredTime).toLocaleString()}</TableCell>
-                      <TableCell>{nameChange.discoveredChannel}</TableCell>
-                    </TableRow>
+                    <Fade in={true}>
+                      <TableRow key={nameChange.id}>
+                        <TableCell>{nameChange.oldUsername}</TableCell>
+                        <TableCell>{nameChange.newUsername}</TableCell>
+                        <TableCell>{new Date(nameChange.discoveredTime).toLocaleString()}</TableCell>
+                        <TableCell>{nameChange.discoveredChannel}</TableCell>
+                      </TableRow>
+                    </Fade>
                 ))}
               </TableBody>
             </Table>

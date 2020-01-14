@@ -6,6 +6,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import * as React from "react";
+import Fade from "@material-ui/core/Fade";
 
 class RecentClearChat extends React.Component {
 
@@ -49,12 +50,14 @@ class RecentClearChat extends React.Component {
               </TableHead>
               <TableBody>
                 {this.state && this.state.clearChats && this.state.clearChats.map(clearChat => (
-                    <TableRow key={clearChat.id}>
-                      <TableCell>{clearChat.targetUsername}</TableCell>
-                      <TableCell>{clearChat.channel}</TableCell>
-                      <TableCell>{clearChat.seconds && (clearChat.seconds !== -1 ? clearChat.seconds : 'Permanent')}</TableCell>
-                      <TableCell>{new Date(clearChat.time).toLocaleString()}</TableCell>
-                    </TableRow>
+                    <Fade in={true}>
+                      <TableRow key={clearChat.id}>
+                        <TableCell>{clearChat.targetUsername}</TableCell>
+                        <TableCell>{clearChat.channel}</TableCell>
+                        <TableCell>{clearChat.seconds && (clearChat.seconds !== -1 ? clearChat.seconds : 'Permanent')}</TableCell>
+                        <TableCell>{new Date(clearChat.time).toLocaleString()}</TableCell>
+                      </TableRow>
+                    </Fade>
                 ))}
               </TableBody>
             </Table>
