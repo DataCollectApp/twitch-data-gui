@@ -50,7 +50,7 @@ class RecentNameChange extends React.Component {
   render() {
     return (
         <Paper>
-          <h3>Recent name changes {this.state.user.displayName ? " for " + this.state.user.displayName : ""}</h3>
+          <h3>Recent name changes {this.state.user ? " for " + this.state.user.displayName : ""}</h3>
           <TableContainer component={Paper}>
             <Table size="small" aria-label="recent name changes">
               <TableHead>
