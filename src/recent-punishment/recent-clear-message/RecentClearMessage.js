@@ -50,7 +50,7 @@ class RecentClearMessage extends React.Component {
   render() {
     return (
         <Paper>
-          <h3>Recent message timeouts {this.state.user ? " for " + this.state.user.displayName : ""}</h3>
+          <h3>{this.state.user ? "Message timeouts" : "Recent message timeouts"}</h3>
           <TableContainer component={Paper}>
             <Table size="small" aria-label="recent clear messages">
               <TableHead>
