@@ -3,6 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import RecentNameChange from "../recent-username/recent-name-change/RecentNameChange";
 import RecentClearChat from "../recent-punishment/recent-clear-chat/RecentClearChat";
 import RecentClearMessage from "../recent-punishment/recent-clear-message/RecentClearMessage";
+import ProfileInformation from "./profile-information/ProfileInformation";
 
 class Profile extends React.Component {
 
@@ -22,7 +23,11 @@ class Profile extends React.Component {
     if (this.state.user) {
       return (
           <div>
-            <h1>{this.state.user.displayName}</h1>
+            <Grid container spacing={1}>
+              <Grid item sm={12} md={6} lg={6} xl={6}>
+                <ProfileInformation user={this.state.user}/>
+              </Grid>
+            </Grid>
             <Grid container spacing={1}>
               <Grid item sm={12} md={6} lg={6} xl={6}>
                 <RecentNameChange user={this.state.user}/>
