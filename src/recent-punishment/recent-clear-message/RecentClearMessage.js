@@ -14,19 +14,32 @@ class RecentClearMessage extends React.Component {
     super(props);
 
     this.state = {
+      user: props.user,
       clearMessages: []
     }
   }
 
   componentDidMount() {
-    fetch('/twitch-data-api/v1/clear-message?sortDirection=DESC&limit=10')
-    .then(response => response.json())
-    .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
-
-    this.interval = setInterval(() => {
+    if (this.state.user) {
+      fetch('/twitch-data-api/v1/clear-message?userId=' + this.state.user.id + '&sortDirection=DESC&limit=10')
+      .then(response => response.json())
+      .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+    } else {
       fetch('/twitch-data-api/v1/clear-message?sortDirection=DESC&limit=10')
       .then(response => response.json())
       .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+    }
+
+    this.interval = setInterval(() => {
+      if (this.state.user) {
+        fetch('/twitch-data-api/v1/clear-message?userId=' + this.state.user.id + '&sortDirection=DESC&limit=10')
+        .then(response => response.json())
+        .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+      } else {
+        fetch('/twitch-data-api/v1/clear-message?sortDirection=DESC&limit=10')
+        .then(response => response.json())
+        .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+      }
     }, 60000);
   }
 
@@ -37,7 +50,7 @@ class RecentClearMessage extends React.Component {
   render() {
     return (
         <Paper>
-          <h3>Recent message timeouts</h3>
+          <h3>Recent message timeouts {this.state.user.displayName ? " for " + this.state.user.displayName : ""}</h3>
           <TableContainer component={Paper}>
             <Table size="small" aria-label="recent clear messages">
               <TableHead>

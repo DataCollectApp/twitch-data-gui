@@ -14,19 +14,32 @@ class RecentClearChat extends React.Component {
     super(props);
 
     this.state = {
+      user: props.user,
       clearChats: []
     }
   }
 
   componentDidMount() {
-    fetch('/twitch-data-api/v1/clear-chat?sortDirection=DESC&limit=10')
-    .then(response => response.json())
-    .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
-
-    this.interval = setInterval(() => {
+    if (this.state.user) {
+      fetch('/twitch-data-api/v1/clear-chat?targetUserId=' + this.state.user.id + '&sortDirection=DESC')
+      .then(response => response.json())
+      .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+    } else {
       fetch('/twitch-data-api/v1/clear-chat?sortDirection=DESC&limit=10')
       .then(response => response.json())
       .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+    }
+
+    this.interval = setInterval(() => {
+      if (this.state.user) {
+        fetch('/twitch-data-api/v1/clear-chat?targetUserId=' + this.state.user.id + '&sortDirection=DESC')
+        .then(response => response.json())
+        .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+      } else {
+        fetch('/twitch-data-api/v1/clear-chat?sortDirection=DESC&limit=10')
+        .then(response => response.json())
+        .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+      }
     }, 60000);
   }
 
@@ -37,7 +50,7 @@ class RecentClearChat extends React.Component {
   render() {
     return (
         <Paper>
-          <h3>Recent timeouts</h3>
+          <h3>Recent timeouts {this.state.user.displayName ? " for " + this.state.user.displayName : ""}</h3>
           <TableContainer component={Paper}>
             <Table size="small" aria-label="recent clear chats">
               <TableHead>
