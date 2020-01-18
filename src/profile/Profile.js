@@ -9,7 +9,7 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
 
-    fetch('/twitch-data-api/v1/twitch-user?username=' + this.props.match.params.username)
+    fetch('/twitch-data-api/v1/twitch-user/username?username=' + this.props.match.params.username)
     .then(response => response.json())
     .then(data => this.state = {user: data});
   }
