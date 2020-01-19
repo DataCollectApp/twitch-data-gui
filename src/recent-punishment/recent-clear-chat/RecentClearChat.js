@@ -15,7 +15,8 @@ class RecentClearChat extends React.Component {
 
     this.state = {
       user: props.user,
-      clearChats: []
+      clearChats: [],
+      isLoaded: false
     }
   }
 
@@ -23,22 +24,22 @@ class RecentClearChat extends React.Component {
     if (this.state.user) {
       fetch('/twitch-data-api/v1/clear-chat?targetUserId=' + this.state.user.id + '&sortDirection=DESC')
       .then(response => response.json())
-      .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
     } else {
       fetch('/twitch-data-api/v1/clear-chat?sortDirection=DESC&limit=10')
       .then(response => response.json())
-      .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
     }
 
     this.interval = setInterval(() => {
       if (this.state.user) {
         fetch('/twitch-data-api/v1/clear-chat?targetUserId=' + this.state.user.id + '&sortDirection=DESC')
         .then(response => response.json())
-        .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+        .then(data => this.setState({isLoaded: true, clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
       } else {
         fetch('/twitch-data-api/v1/clear-chat?sortDirection=DESC&limit=10')
         .then(response => response.json())
-        .then(data => this.setState({clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
+        .then(data => this.setState({isLoaded: true, clearChats: data, clearChatsLastUpdated: new Date().toLocaleString()}));
       }
     }, 60000);
   }
@@ -48,36 +49,44 @@ class RecentClearChat extends React.Component {
   }
 
   render() {
-    return (
-        <Paper>
-          <h3>{this.state.user ? "Timeouts" : "Recent timeouts"}</h3>
-          <TableContainer component={Paper}>
-            <Table size="small" aria-label="recent clear chats">
-              <TableHead>
-                <TableRow>
-                  <TableCell><b>Username</b></TableCell>
-                  <TableCell><b>Channel</b></TableCell>
-                  <TableCell><b>Seconds</b></TableCell>
-                  <TableCell><b>Time</b></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state && this.state.clearChats && this.state.clearChats.map(clearChat => (
-                    <Fade in={true}>
-                      <TableRow key={clearChat.id}>
-                        <TableCell>{clearChat.targetUsername}</TableCell>
-                        <TableCell>{clearChat.channel}</TableCell>
-                        <TableCell>{clearChat.seconds && (clearChat.seconds !== -1 ? clearChat.seconds : 'Permanent')}</TableCell>
-                        <TableCell>{new Date(clearChat.time).toLocaleString()}</TableCell>
-                      </TableRow>
-                    </Fade>
-                ))}
-              </TableBody>
-            </Table>
-            Last updated: {this.state.clearChatsLastUpdated}
-          </TableContainer>
-        </Paper>
-    );
+    if (this.state.isLoaded) {
+      return (
+          <Paper>
+            <h3>{this.state.user ? "Timeouts" : "Recent timeouts"}</h3>
+            <TableContainer component={Paper}>
+              <Table size="small" aria-label="recent clear chats">
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>Username</b></TableCell>
+                    <TableCell><b>Channel</b></TableCell>
+                    <TableCell><b>Seconds</b></TableCell>
+                    <TableCell><b>Time</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state && this.state.clearChats && this.state.clearChats.map(clearChat => (
+                      <Fade in={true}>
+                        <TableRow key={clearChat.id}>
+                          <TableCell>{clearChat.targetUsername}</TableCell>
+                          <TableCell>{clearChat.channel}</TableCell>
+                          <TableCell>{clearChat.seconds && (clearChat.seconds !== -1 ? clearChat.seconds : 'Permanent')}</TableCell>
+                          <TableCell>{new Date(clearChat.time).toLocaleString()}</TableCell>
+                        </TableRow>
+                      </Fade>
+                  ))}
+                </TableBody>
+              </Table>
+              Last updated: {this.state.clearChatsLastUpdated}
+            </TableContainer>
+          </Paper>
+      );
+    } else {
+      return (
+          <Paper>
+            <h3>Loading data...</h3>
+          </Paper>
+      );
+    }
   }
 }
 

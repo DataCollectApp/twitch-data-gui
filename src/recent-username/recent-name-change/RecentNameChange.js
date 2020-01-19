@@ -15,7 +15,8 @@ class RecentNameChange extends React.Component {
 
     this.state = {
       user: props.user,
-      nameChanges: []
+      nameChanges: [],
+      isLoaded: false
     }
   }
 
@@ -23,22 +24,22 @@ class RecentNameChange extends React.Component {
     if (this.state.user) {
       fetch('/twitch-data-api/v1/name-change/' + this.state.user.id)
       .then(response => response.json())
-      .then(data => this.setState({nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
     } else {
       fetch('/twitch-data-api/v1/name-change?sortDirection=DESC&limit=20&excludeOrigin=true')
       .then(response => response.json())
-      .then(data => this.setState({nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
     }
 
     this.interval = setInterval(() => {
       if (this.state.user) {
         fetch('/twitch-data-api/v1/name-change/' + this.state.user.id)
         .then(response => response.json())
-        .then(data => this.setState({nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
+        .then(data => this.setState({isLoaded: true, nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
       } else {
         fetch('/twitch-data-api/v1/name-change?sortDirection=DESC&limit=20&excludeOrigin=true')
         .then(response => response.json())
-        .then(data => this.setState({nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
+        .then(data => this.setState({isLoaded: true, nameChanges: data, nameChangesLastUpdated: new Date().toLocaleString()}));
       }
     }, 60000);
   }
@@ -48,36 +49,44 @@ class RecentNameChange extends React.Component {
   }
 
   render() {
-    return (
-        <Paper>
-          <h3>{this.state.user ? "Name changes" : "Recent name changes"}</h3>
-          <TableContainer component={Paper}>
-            <Table size="small" aria-label="recent name changes">
-              <TableHead>
-                <TableRow>
-                  <TableCell><b>Old username</b></TableCell>
-                  <TableCell><b>New username</b></TableCell>
-                  <TableCell><b>Time</b></TableCell>
-                  <TableCell><b>Discovered in channel</b></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state && this.state.nameChanges && this.state.nameChanges.map(nameChange => (
-                    <Fade in={true}>
-                      <TableRow key={nameChange.id}>
-                        <TableCell>{nameChange.oldUsername}</TableCell>
-                        <TableCell>{nameChange.newUsername}</TableCell>
-                        <TableCell>{new Date(nameChange.discoveredTime).toLocaleString()}</TableCell>
-                        <TableCell>{nameChange.discoveredChannel}</TableCell>
-                      </TableRow>
-                    </Fade>
-                ))}
-              </TableBody>
-            </Table>
-            Last updated: {this.state.nameChangesLastUpdated}
-          </TableContainer>
-        </Paper>
-    );
+    if (this.state.isLoaded) {
+      return (
+          <Paper>
+            <h3>{this.state.user ? "Name changes" : "Recent name changes"}</h3>
+            <TableContainer component={Paper}>
+              <Table size="small" aria-label="recent name changes">
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>Old username</b></TableCell>
+                    <TableCell><b>New username</b></TableCell>
+                    <TableCell><b>Time</b></TableCell>
+                    <TableCell><b>Discovered in channel</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state && this.state.nameChanges && this.state.nameChanges.map(nameChange => (
+                      <Fade in={true}>
+                        <TableRow key={nameChange.id}>
+                          <TableCell>{nameChange.oldUsername}</TableCell>
+                          <TableCell>{nameChange.newUsername}</TableCell>
+                          <TableCell>{new Date(nameChange.discoveredTime).toLocaleString()}</TableCell>
+                          <TableCell>{nameChange.discoveredChannel}</TableCell>
+                        </TableRow>
+                      </Fade>
+                  ))}
+                </TableBody>
+              </Table>
+              Last updated: {this.state.nameChangesLastUpdated}
+            </TableContainer>
+          </Paper>
+      );
+    } else {
+      return (
+          <Paper>
+            <h3>Loading data...</h3>
+          </Paper>
+      );
+    }
   }
 }
 

@@ -14,19 +14,20 @@ class RecentGlobalClearChat extends React.Component {
     super(props);
 
     this.state = {
-      globalClearChats: []
+      globalClearChats: [],
+      isLoaded: false
     }
   }
 
   componentDidMount() {
     fetch('/twitch-data-api/v1/global-clear-chat?sortDirection=DESC&limit=10')
     .then(response => response.json())
-    .then(data => this.setState({globalClearChats: data, globalClearChatsLastUpdated: new Date().toLocaleString()}));
+    .then(data => this.setState({isLoaded: true, globalClearChats: data, globalClearChatsLastUpdated: new Date().toLocaleString()}));
 
     this.interval = setInterval(() => {
       fetch('/twitch-data-api/v1/global-clear-chat?sortDirection=DESC&limit=10')
       .then(response => response.json())
-      .then(data => this.setState({globalClearChats: data, globalClearChatsLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, globalClearChats: data, globalClearChatsLastUpdated: new Date().toLocaleString()}));
     }, 60000);
   }
 
@@ -35,32 +36,40 @@ class RecentGlobalClearChat extends React.Component {
   }
 
   render() {
-    return (
-        <Paper>
-          <h3>Recent global timeouts *</h3>
-          <TableContainer component={Paper}>
-            <Table size="small" aria-label="recent global clear chats">
-              <TableHead>
-                <TableRow>
-                  <TableCell><b>Channel</b></TableCell>
-                  <TableCell><b>Time</b></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state && this.state.globalClearChats && this.state.globalClearChats.map(globalClearChat => (
-                    <Fade in={true}>
-                      <TableRow key={globalClearChat.id}>
-                        <TableCell>{globalClearChat.channel}</TableCell>
-                        <TableCell>{new Date(globalClearChat.time).toLocaleString()}</TableCell>
-                      </TableRow>
-                    </Fade>
-                ))}
-              </TableBody>
-            </Table>
-            Last updated: {this.state.globalClearChatsLastUpdated}
-          </TableContainer>
-        </Paper>
-    );
+    if (this.state.isLoaded) {
+      return (
+          <Paper>
+            <h3>Recent global timeouts *</h3>
+            <TableContainer component={Paper}>
+              <Table size="small" aria-label="recent global clear chats">
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>Channel</b></TableCell>
+                    <TableCell><b>Time</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state && this.state.globalClearChats && this.state.globalClearChats.map(globalClearChat => (
+                      <Fade in={true}>
+                        <TableRow key={globalClearChat.id}>
+                          <TableCell>{globalClearChat.channel}</TableCell>
+                          <TableCell>{new Date(globalClearChat.time).toLocaleString()}</TableCell>
+                        </TableRow>
+                      </Fade>
+                  ))}
+                </TableBody>
+              </Table>
+              Last updated: {this.state.globalClearChatsLastUpdated}
+            </TableContainer>
+          </Paper>
+      );
+    } else {
+      return (
+          <Paper>
+            <h3>Loading data...</h3>
+          </Paper>
+      );
+    }
   }
 }
 

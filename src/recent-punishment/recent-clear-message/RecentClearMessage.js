@@ -15,7 +15,8 @@ class RecentClearMessage extends React.Component {
 
     this.state = {
       user: props.user,
-      clearMessages: []
+      clearMessages: [],
+      isLoaded: false
     }
   }
 
@@ -23,22 +24,22 @@ class RecentClearMessage extends React.Component {
     if (this.state.user) {
       fetch('/twitch-data-api/v1/clear-message?userId=' + this.state.user.id + '&sortDirection=DESC&limit=10')
       .then(response => response.json())
-      .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
     } else {
       fetch('/twitch-data-api/v1/clear-message?sortDirection=DESC&limit=10')
       .then(response => response.json())
-      .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+      .then(data => this.setState({isLoaded: true, clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
     }
 
     this.interval = setInterval(() => {
       if (this.state.user) {
         fetch('/twitch-data-api/v1/clear-message?userId=' + this.state.user.id + '&sortDirection=DESC&limit=10')
         .then(response => response.json())
-        .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+        .then(data => this.setState({isLoaded: true, clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
       } else {
         fetch('/twitch-data-api/v1/clear-message?sortDirection=DESC&limit=10')
         .then(response => response.json())
-        .then(data => this.setState({clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
+        .then(data => this.setState({isLoaded: true, clearMessages: data, clearMessagesLastUpdated: new Date().toLocaleString()}));
       }
     }, 60000);
   }
@@ -48,36 +49,44 @@ class RecentClearMessage extends React.Component {
   }
 
   render() {
-    return (
-        <Paper>
-          <h3>{this.state.user ? "Message timeouts" : "Recent message timeouts"}</h3>
-          <TableContainer component={Paper}>
-            <Table size="small" aria-label="recent clear messages">
-              <TableHead>
-                <TableRow>
-                  <TableCell><b>Username</b></TableCell>
-                  <TableCell><b>Channel</b></TableCell>
-                  <TableCell><b>Message</b></TableCell>
-                  <TableCell><b>Time</b></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state && this.state.clearMessages && this.state.clearMessages.map(clearMessage => (
-                    <Fade in={true}>
-                      <TableRow key={clearMessage.id}>
-                        <TableCell>{clearMessage.targetUsername}</TableCell>
-                        <TableCell>{clearMessage.channel}</TableCell>
-                        <TableCell>{clearMessage.message}</TableCell>
-                        <TableCell>{new Date(clearMessage.time).toLocaleString()}</TableCell>
-                      </TableRow>
-                    </Fade>
-                ))}
-              </TableBody>
-            </Table>
-            Last updated: {this.state.clearMessagesLastUpdated}
-          </TableContainer>
-        </Paper>
-    );
+    if (this.state.isLoaded) {
+      return (
+          <Paper>
+            <h3>{this.state.user ? "Message timeouts" : "Recent message timeouts"}</h3>
+            <TableContainer component={Paper}>
+              <Table size="small" aria-label="recent clear messages">
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>Username</b></TableCell>
+                    <TableCell><b>Channel</b></TableCell>
+                    <TableCell><b>Message</b></TableCell>
+                    <TableCell><b>Time</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state && this.state.clearMessages && this.state.clearMessages.map(clearMessage => (
+                      <Fade in={true}>
+                        <TableRow key={clearMessage.id}>
+                          <TableCell>{clearMessage.targetUsername}</TableCell>
+                          <TableCell>{clearMessage.channel}</TableCell>
+                          <TableCell>{clearMessage.message}</TableCell>
+                          <TableCell>{new Date(clearMessage.time).toLocaleString()}</TableCell>
+                        </TableRow>
+                      </Fade>
+                  ))}
+                </TableBody>
+              </Table>
+              Last updated: {this.state.clearMessagesLastUpdated}
+            </TableContainer>
+          </Paper>
+      );
+    } else {
+      return (
+          <Paper>
+            <h3>Loading data...</h3>
+          </Paper>
+      );
+    }
   }
 }
 
